@@ -53,10 +53,26 @@ scene.add(pointLight);
 // 初始化物理世界
 const world = new CANNON.World();
 // 设置重力
-world.gravity.set(0, -0.82, 0);
+world.gravity.set(0, -9.82, 0);
+
+// 世界里面的地板
+const floorShape = new CANNON.Plane();
+// 材质
+const floorMaterail = new CANNON.Material('floor');
+const floorBody = new CANNON.Body();
+// 质量为0，保持物体不动
+floorBody.mass = 0;
+floorBody.addShape(floorShape);
+floorBody.material = floorMaterail;
+floorBody.position.set(0, -3, 0);
+floorBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
+world.addBody(floorBody);
 
 // 加载模型
+const diceArr = [];
 const gltfLoader = new GLTFLoader();
+// 骰子的材质
+const diceMaterial = new CANNON.Material('cube');
 gltfLoader.load('/dice.glb', gltf => {
   gltf.scene.position.set(0, -2.4, 0);
   gltf.scene.rotation.x = Math.PI;
@@ -65,8 +81,32 @@ gltfLoader.load('/dice.glb', gltf => {
     const dice = gltf.scene.clone();
     dice.position.x = (i - 2) * 1.6
     scene.add(dice);
+    // 世界里的骰子
+    const diceShape = new CANNON.Box(new CANNON.Vec3(0.59, 0.59, 0.59));
+    const diceBody = new CANNON.Body({
+      shape: diceShape,
+      material: diceMaterial,
+      position: new CANNON.Vec3((i - 2) * 1.6, -2.4, 0),
+      mass: 1
+    });
+    diceBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), Math.PI);
+    world.addBody(diceBody);
+    diceArr.push({ dice, body: diceBody });
   }
 });
+
+// 材质混合，设置两种材质的碰撞参数
+const defaultContactMaterial = new CANNON.ContactMaterial(diceMaterial, floorMaterail, {
+  // 摩擦力
+  friction: 0.1,
+  // 弹性
+  restitution: 0.7
+});
+
+// 将材料的关联设置添加到物理世界
+world.addContactMaterial(defaultContactMaterial);
+// 设置默认材质
+world.defaultContactMaterial = defaultContactMaterial;
 
 const clock = new THREE.Clock();
 
@@ -74,13 +114,26 @@ const clock = new THREE.Clock();
 const render = () => {
   const delta = clock.getDelta();
   world.step(delta);
-
+  //更新渲染引擎中的物体
+  diceArr.forEach(item => {
+    //下落
+    item.dice.position.copy(item.body.position);
+    //翻滚
+    item.dice.quaternion.copy(item.body.quaternion);
+  });
   renderer.render(scene, camera);
   controls.update();
   requestAnimationFrame(render);
 };
 
 render();
+
+document.addEventListener('click', () => {
+  console.log(diceArr);
+  diceArr.forEach(({ body }) => {
+    body.applyLocalForce(new CANNON.Vec3(0, 0, 60), new CANNON.Vec3(5, 5, 5));
+  });
+});
 </script>
 
 <template></template>
