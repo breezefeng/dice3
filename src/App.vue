@@ -53,7 +53,7 @@ scene.add(pointLight);
 // 初始化物理世界
 const world = new CANNON.World();
 // 设置重力
-world.gravity.set(0, -9.82, 0);
+world.gravity.set(0, -20, 0);
 
 // 世界里面的地板
 const floorShape = new CANNON.Plane();
@@ -113,7 +113,7 @@ const clock = new THREE.Clock();
 // render函数
 const render = () => {
   const delta = clock.getDelta();
-  world.step(delta);
+  world.step(1 / 60, delta);
   //更新渲染引擎中的物体
   diceArr.forEach(item => {
     //下落
@@ -131,7 +131,10 @@ render();
 document.addEventListener('click', () => {
   console.log(diceArr);
   diceArr.forEach(({ body }) => {
-    body.applyLocalForce(new CANNON.Vec3(0, 60, 0), new CANNON.Vec3(5, 5, 5));
+    body.applyImpulse(
+      new CANNON.Vec3(Math.random(), 12, Math.random()),
+      new CANNON.Vec3(Math.random(), 12, Math.random())
+    );
   });
 });
 </script>
