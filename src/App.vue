@@ -98,9 +98,9 @@ gltfLoader.load('/dice.glb', gltf => {
 // 材质混合，设置两种材质的碰撞参数
 const defaultContactMaterial = new CANNON.ContactMaterial(diceMaterial, floorMaterail, {
   // 摩擦力
-  friction: 0.1,
+  friction: 0.05,
   // 弹性
-  restitution: 0.7
+  restitution: 0.5
 });
 
 // 将材料的关联设置添加到物理世界
@@ -131,7 +131,7 @@ render();
 document.addEventListener('click', () => {
   console.log(diceArr);
   diceArr.forEach(({ body }) => {
-    body.applyLocalForce(new CANNON.Vec3(0, 0, 60), new CANNON.Vec3(5, 5, 5));
+    body.applyLocalForce(new CANNON.Vec3(0, 60, 0), new CANNON.Vec3(5, 5, 5));
   });
 });
 </script>
