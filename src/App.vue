@@ -137,6 +137,18 @@ document.addEventListener('click', () => {
     );
   });
 });
+
+//尺寸变化
+window.addEventListener('resize', () => {
+    //更新摄像头比率
+    camera.aspect = window.innerWidth / window.innerHeight;
+    //更新摄像头矩阵
+    camera.updateProjectionMatrix();
+    //更新渲染器尺寸
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    //更新渲染器比率
+    renderer.setPixelRatio(window.devicePixelRatio);
+});
 </script>
 
 <template></template>
