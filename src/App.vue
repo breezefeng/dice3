@@ -16,7 +16,7 @@ const scene = new THREE.Scene();
 // 初始化相机
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 300);
 // 设置相机位置
-camera.position.set(0, 8, 0);
+camera.position.set(0, 10, 0);
 camera.updateProjectionMatrix();
 // 初始化渲染器
 const renderer = new THREE.WebGLRenderer({
@@ -204,7 +204,7 @@ barrier = new CANNON.Body({
   shape: new CANNON.Box(new CANNON.Vec3(18, 10, 1)),
 
 });
-barrier.position.set(0, 5, 0);
+barrier.position.set(0, 8, 0);
 barrier.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
 world.addBody(barrier);
 
@@ -312,7 +312,7 @@ document.addEventListener('click', () => {
     body.sleep();
     body.applyImpulse(
       new CANNON.Vec3(Math.random() * 10, 12, Math.random() * 10),
-      new CANNON.Vec3(Math.random() * 10, 12, Math.random() * 10)
+      body.position
     );
   });
 });
