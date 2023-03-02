@@ -34,7 +34,7 @@ controls.enableDamping = true;
 
 // 平面
 const planeGeometry = new THREE.PlaneGeometry(18, 18, 1, 1);
-const plane = new THREE.Mesh(planeGeometry, new THREE.MeshStandardMaterial({ color: 0x000000 }));
+const plane = new THREE.Mesh(planeGeometry, new THREE.MeshStandardMaterial({ color: 0x111111 }));
 // 接收阴影
 plane.receiveShadow = true;
 plane.position.y = -3;
@@ -249,7 +249,7 @@ gltfLoader.load('/dice.glb', gltf => {
 // 材质混合，设置两种材质的碰撞参数
 const defaultContactMaterial = new CANNON.ContactMaterial(diceMaterial, floorMaterail, {
   // 摩擦力
-  friction: 0.05,
+  friction: 0.3,
   // 弹性
   restitution: 0.5
 });
