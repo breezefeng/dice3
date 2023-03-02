@@ -5,6 +5,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { ref } from 'vue';
 
+const ASPECT = window.innerWidth / window.innerHeight;
 // 骰子个数，默认5个
 const diceNum = ref(5);
 // 初始化场景
@@ -28,22 +29,22 @@ const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 
 // 添加坐标轴辅助器
-const axesHelper = new THREE.AxesHelper(5);
-scene.add(axesHelper);
+// const axesHelper = new THREE.AxesHelper(5);
+// scene.add(axesHelper);
 
-//平面
-const planeGeometry = new THREE.PlaneGeometry(50, 50, 1, 1);
-const plane = new THREE.Mesh(planeGeometry, new THREE.MeshStandardMaterial({ color: 0x111111 }));
-//接收阴影
+// 平面
+const planeGeometry = new THREE.PlaneGeometry(18, 18, 1, 1);
+const plane = new THREE.Mesh(planeGeometry, new THREE.MeshStandardMaterial({ color: 0x000000 }));
+// 接收阴影
 plane.receiveShadow = true;
 plane.position.y = -3;
 plane.rotation.x = -Math.PI / 2;
 scene.add(plane);
 
-//环境光
+// 环境光
 const ambientLight = new THREE.AmbientLight(0xffffff, 1);
 scene.add(ambientLight);
-//平行光
+// 平行光
 const directLight = new THREE.DirectionalLight(0xffffff, 1);
 scene.add(directLight);
 // 聚光灯
@@ -54,6 +55,8 @@ scene.add(pointLight);
 const world = new CANNON.World();
 // 设置重力
 world.gravity.set(0, -20, 0);
+// 让没有碰撞的物品休眠，不检测，提升性能
+world.allowSleep = true;
 
 // 世界里面的地板
 const floorShape = new CANNON.Plane();
@@ -67,6 +70,154 @@ floorBody.material = floorMaterail;
 floorBody.position.set(0, -3, 0);
 floorBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
 world.addBody(floorBody);
+
+// 墙面
+let barrier = new CANNON.Body({
+  mass: 0,
+  shape: new CANNON.Box(new CANNON.Vec3(1, 10, 18))
+});
+barrier.position.set(-8 * ASPECT, 0, 0);
+world.addBody(barrier);
+
+let wall = new THREE.Mesh(
+  new THREE.BoxGeometry(1, 10, 18),
+  new THREE.MeshPhongMaterial({
+    color: '#330033',
+    opacity: 0,
+    transparent: true,
+    side: THREE.DoubleSide
+  })
+);
+wall.quaternion.set(
+  barrier.quaternion.x,
+  barrier.quaternion.y,
+  barrier.quaternion.z,
+  barrier.quaternion.w
+);
+wall.position.set(
+  barrier.position.x,
+  barrier.position.y,
+  barrier.position.z
+);
+scene.add(wall);
+
+barrier = new CANNON.Body({
+  mass: 0,
+  shape: new CANNON.Box(new CANNON.Vec3(1, 10, 18))
+});
+barrier.position.set(8 * ASPECT, 0, 0);
+world.addBody(barrier);
+
+wall = new THREE.Mesh(
+  new THREE.BoxGeometry(1, 10, 18),
+  new THREE.MeshPhongMaterial({
+    color: "#000033",
+    opacity: 0,
+    transparent: true,
+    side: THREE.DoubleSide
+  })
+);
+wall.quaternion.set(
+  barrier.quaternion.x,
+  barrier.quaternion.y,
+  barrier.quaternion.z,
+  barrier.quaternion.w
+);
+wall.position.set(
+  barrier.position.x,
+  barrier.position.y,
+  barrier.position.z
+);
+scene.add(wall);
+
+barrier = new CANNON.Body({
+  mass: 0,
+  shape: new CANNON.Box(new CANNON.Vec3(18, 10, 1))
+});
+barrier.position.set(0, 0, -8);
+world.addBody(barrier);
+
+wall = new THREE.Mesh(
+  new THREE.BoxGeometry(18, 10, 1),
+  new THREE.MeshPhongMaterial({
+    color: "#000033",
+    opacity: 0,
+    transparent: true,
+    side: THREE.DoubleSide
+  })
+);
+wall.quaternion.set(
+  barrier.quaternion.x,
+  barrier.quaternion.y,
+  barrier.quaternion.z,
+  barrier.quaternion.w
+);
+wall.position.set(
+  barrier.position.x,
+  barrier.position.y,
+  barrier.position.z
+);
+scene.add(wall);
+
+barrier = new CANNON.Body({
+  mass: 0,
+  shape: new CANNON.Box(new CANNON.Vec3(18, 10, 1))
+});
+barrier.position.set(0, 0, 8);
+world.addBody(barrier);
+
+wall = new THREE.Mesh(
+  new THREE.BoxGeometry(18, 10, 1),
+  new THREE.MeshPhongMaterial({
+    color: "#000033",
+    opacity: 0,
+    transparent: true,
+    side: THREE.DoubleSide
+  })
+);
+wall.quaternion.set(
+  barrier.quaternion.x,
+  barrier.quaternion.y,
+  barrier.quaternion.z,
+  barrier.quaternion.w
+);
+wall.position.set(
+  barrier.position.x,
+  barrier.position.y,
+  barrier.position.z
+);
+scene.add(wall);
+
+barrier = new CANNON.Body({
+  mass: 0,
+  shape: new CANNON.Box(new CANNON.Vec3(18, 10, 1)),
+
+});
+barrier.position.set(0, 5, 0);
+barrier.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
+world.addBody(barrier);
+
+wall = new THREE.Mesh(
+  new THREE.BoxGeometry(20, 16, 1),
+  new THREE.MeshPhongMaterial({
+    color: "#003300",
+    opacity: 0,
+    transparent: true,
+    side: THREE.DoubleSide
+  })
+);
+wall.quaternion.set(
+  barrier.quaternion.x,
+  barrier.quaternion.y,
+  barrier.quaternion.z,
+  barrier.quaternion.w
+);
+wall.position.set(
+  barrier.position.x,
+  barrier.position.y,
+  barrier.position.z
+);
+scene.add(wall);
 
 // 加载模型
 const diceArr = [];
@@ -114,11 +265,11 @@ const clock = new THREE.Clock();
 const render = () => {
   const delta = clock.getDelta();
   world.step(1 / 60, delta);
-  //更新渲染引擎中的物体
+  // 更新渲染引擎中的物体
   diceArr.forEach(item => {
-    //下落
+    // 下落
     item.dice.position.copy(item.body.position);
-    //翻滚
+    // 翻滚
     item.dice.quaternion.copy(item.body.quaternion);
   });
   renderer.render(scene, camera);
@@ -129,25 +280,25 @@ const render = () => {
 render();
 
 document.addEventListener('click', () => {
-  console.log(diceArr);
   diceArr.forEach(({ body }) => {
+    body.sleep();
     body.applyImpulse(
-      new CANNON.Vec3(Math.random(), 12, Math.random()),
-      new CANNON.Vec3(Math.random(), 12, Math.random())
+      new CANNON.Vec3(Math.random() * 10, 12, Math.random() * 10),
+      new CANNON.Vec3(Math.random() * 10, 12, Math.random() * 10)
     );
   });
 });
 
-//尺寸变化
+// 尺寸变化
 window.addEventListener('resize', () => {
-    //更新摄像头比率
-    camera.aspect = window.innerWidth / window.innerHeight;
-    //更新摄像头矩阵
-    camera.updateProjectionMatrix();
-    //更新渲染器尺寸
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    //更新渲染器比率
-    renderer.setPixelRatio(window.devicePixelRatio);
+  // 更新摄像头比率
+  camera.aspect = window.innerWidth / window.innerHeight;
+  // 更新摄像头矩阵
+  camera.updateProjectionMatrix();
+  // 更新渲染器尺寸
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  // 更新渲染器比率
+  renderer.setPixelRatio(window.devicePixelRatio);
 });
 </script>
 
