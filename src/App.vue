@@ -4,6 +4,9 @@ import * as CANNON from 'cannon-es'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { ref } from 'vue';
+import audioFile from './assets/audio.mp3';
+
+const audio = new Audio(audioFile);
 
 const ASPECT = window.innerWidth / window.innerHeight;
 // 骰子个数，默认5个
@@ -251,6 +254,23 @@ gltfLoader.load('/dice.glb', gltf => {
     diceBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), Math.PI);
     world.addBody(diceBody);
     diceArr.push({ dice, body: diceBody });
+    //碰撞事件
+    diceBody.addEventListener('collide', (e) => {
+      // 与地面碰撞时才有碰撞声音
+      if (e.body?.material?.name === 'floor') {
+        // 获取碰撞强度
+        const impactStrength = e.contact.getImpactVelocityAlongNormal();
+        if (impactStrength > 5) {
+          console.log('碰撞强度:', impactStrength);
+          // 重新从零开始播放
+          audio.currentTime = 0;
+          // 设置音量根据强度来
+          audio.volume = (impactStrength > 1 ? 1 : impactStrength) / 10;
+          // 强度大于5播放
+          audio.play();
+        }
+      }
+    });
   }
 });
 
