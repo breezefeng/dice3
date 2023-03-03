@@ -36,21 +36,13 @@ controls.enableDamping = true;
 // scene.add(axesHelper);
 
 // 平面
-const planeGeometry = new THREE.PlaneGeometry(1, 1);
+const planeGeometry = new THREE.PlaneGeometry(18, 18, 1, 1);
 const plane = new THREE.Mesh(planeGeometry, new THREE.MeshStandardMaterial({ color: 0x000000 }));
 // 接收阴影
 plane.receiveShadow = true;
 plane.position.y = -3;
 plane.rotation.x = -Math.PI / 2;
-plane.scale.set();
 scene.add(plane);
-
-const cameraZ = 8;
-const distance = cameraZ - plane.position.z;
-const vFov = camera.fov * Math.PI / 180;
-const scaleY = 2 * Math.tan(vFov / 2) * distance;
-const scaleX = scaleY * camera.aspect;
-plane.scale.set(scaleX, scaleY, 1);
 
 // 环境光
 const ambientLight = new THREE.AmbientLight(0xffffff, 1);
@@ -87,7 +79,7 @@ let barrier = new CANNON.Body({
   mass: 0,
   shape: new CANNON.Box(new CANNON.Vec3(1, 10, 18))
 });
-barrier.position.set(-8 * ASPECT, 0, 0);
+barrier.position.set(-9 * ASPECT, 0, 0);
 world.addBody(barrier);
 
 let wall = new THREE.Mesh(
@@ -116,7 +108,7 @@ barrier = new CANNON.Body({
   mass: 0,
   shape: new CANNON.Box(new CANNON.Vec3(1, 10, 18))
 });
-barrier.position.set(8 * ASPECT, 0, 0);
+barrier.position.set(9 * ASPECT, 0, 0);
 world.addBody(barrier);
 
 wall = new THREE.Mesh(
@@ -145,7 +137,7 @@ barrier = new CANNON.Body({
   mass: 0,
   shape: new CANNON.Box(new CANNON.Vec3(18, 10, 1))
 });
-barrier.position.set(0, 0, -8 * ASPECT);
+barrier.position.set(0, 0, -18 * ASPECT);
 world.addBody(barrier);
 
 wall = new THREE.Mesh(
@@ -174,7 +166,7 @@ barrier = new CANNON.Body({
   mass: 0,
   shape: new CANNON.Box(new CANNON.Vec3(18, 10, 1))
 });
-barrier.position.set(0, 0, 8 * ASPECT);
+barrier.position.set(0, 0, 18 * ASPECT);
 world.addBody(barrier);
 
 wall = new THREE.Mesh(
@@ -204,7 +196,7 @@ barrier = new CANNON.Body({
   shape: new CANNON.Box(new CANNON.Vec3(18, 10, 1)),
 
 });
-barrier.position.set(0, 8, 0);
+barrier.position.set(0, 5, 0);
 barrier.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
 world.addBody(barrier);
 
