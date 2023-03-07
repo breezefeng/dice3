@@ -40,6 +40,8 @@ document.body.appendChild(renderer.domElement);
 // 初始化控制器
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
+// 禁用控制器
+controls.enabled = false;
 
 // 添加坐标轴辅助器
 // const axesHelper = new THREE.AxesHelper(5);
