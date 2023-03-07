@@ -6,11 +6,21 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { ref } from 'vue';
 import audioFile from './assets/audio.mp3';
 
+const positionMap = {
+  1: [[0, 0]],
+  2: [[-0.5, 0], [0.5, 0]],
+  3: [[-1, 0], [0, 0], [1, 0]],
+  4: [[-0.5, -1], [-1, 0], [0, 0], [1, 0]],
+  5: [[-0.5, -1], [0.5, -1], [-1, 0], [0, 0], [1, 0]],
+  6: [[-0.5, -1], [0.5, -1], [-1, 0], [0, 0], [1, 0], [-0.5, 1]],
+  7: [[-0.5, -1], [0.5, -1], [-1, 0], [0, 0], [1, 0], [-0.5, 1], [0.5, 1]]
+};
+
 const audio = new Audio(audioFile);
 
 const ASPECT = window.innerWidth / window.innerHeight;
 // 骰子个数，默认5个
-const diceNum = ref(5);
+const diceNum = ref(7);
 // 初始化场景
 const scene = new THREE.Scene();
 // 初始化相机
@@ -36,7 +46,9 @@ controls.enableDamping = true;
 // scene.add(axesHelper);
 
 // 平面
-const planeGeometry = new THREE.PlaneGeometry(18, 18, 1, 1);
+const rows = Math.floor(window.innerWidth / 60);
+const cols = Math.floor(window.innerHeight / 60);
+const planeGeometry = new THREE.PlaneGeometry(rows, cols, 1, 1);
 const plane = new THREE.Mesh(planeGeometry, new THREE.MeshStandardMaterial({ color: 0x000000 }));
 // 接收阴影
 plane.receiveShadow = true;
@@ -74,16 +86,18 @@ floorBody.position.set(0, -3, 0);
 floorBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
 world.addBody(floorBody);
 
+const wallMaterial = new CANNON.Material('wall');
 // 墙面
 let barrier = new CANNON.Body({
   mass: 0,
-  shape: new CANNON.Box(new CANNON.Vec3(1, 10, 18))
+  material: wallMaterial,
+  shape: new CANNON.Box(new CANNON.Vec3(0.1, rows, cols))
 });
-barrier.position.set(-9 * ASPECT, 0, 0);
+barrier.position.set(-rows / 2, 0, 0);
 world.addBody(barrier);
 
 let wall = new THREE.Mesh(
-  new THREE.BoxGeometry(1, 10, 18),
+  new THREE.BoxGeometry(0.1, rows, cols),
   new THREE.MeshPhongMaterial({
     color: '#330033',
     opacity: 0,
@@ -106,13 +120,14 @@ scene.add(wall);
 
 barrier = new CANNON.Body({
   mass: 0,
-  shape: new CANNON.Box(new CANNON.Vec3(1, 10, 18))
+  material: wallMaterial,
+  shape: new CANNON.Box(new CANNON.Vec3(0.1, rows, cols))
 });
-barrier.position.set(9 * ASPECT, 0, 0);
+barrier.position.set(rows / 2, 0, 0);
 world.addBody(barrier);
 
 wall = new THREE.Mesh(
-  new THREE.BoxGeometry(1, 10, 18),
+  new THREE.BoxGeometry(0.1, rows, cols),
   new THREE.MeshPhongMaterial({
     color: "#000033",
     opacity: 0,
@@ -135,13 +150,14 @@ scene.add(wall);
 
 barrier = new CANNON.Body({
   mass: 0,
-  shape: new CANNON.Box(new CANNON.Vec3(18, 10, 1))
+  material: wallMaterial,
+  shape: new CANNON.Box(new CANNON.Vec3(rows, cols, 0.1))
 });
-barrier.position.set(0, 0, -18 * ASPECT);
+barrier.position.set(0, 0, -cols / 2);
 world.addBody(barrier);
 
 wall = new THREE.Mesh(
-  new THREE.BoxGeometry(18, 10, 1),
+  new THREE.BoxGeometry(rows, cols, 0.1),
   new THREE.MeshPhongMaterial({
     color: "#000033",
     opacity: 0,
@@ -164,13 +180,14 @@ scene.add(wall);
 
 barrier = new CANNON.Body({
   mass: 0,
-  shape: new CANNON.Box(new CANNON.Vec3(18, 10, 1))
+  material: wallMaterial,
+  shape: new CANNON.Box(new CANNON.Vec3(rows, cols, 0.1))
 });
-barrier.position.set(0, 0, 18 * ASPECT);
+barrier.position.set(0, 0, cols / 2);
 world.addBody(barrier);
 
 wall = new THREE.Mesh(
-  new THREE.BoxGeometry(18, 10, 1),
+  new THREE.BoxGeometry(rows, cols, 0.1),
   new THREE.MeshPhongMaterial({
     color: "#000033",
     opacity: 0,
@@ -193,15 +210,15 @@ scene.add(wall);
 
 barrier = new CANNON.Body({
   mass: 0,
-  shape: new CANNON.Box(new CANNON.Vec3(18, 10, 1)),
+  shape: new CANNON.Box(new CANNON.Vec3(rows, cols, 1)),
 
 });
-barrier.position.set(0, 5, 0);
+barrier.position.set(0, cols / 2, 0);
 barrier.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
 world.addBody(barrier);
 
 wall = new THREE.Mesh(
-  new THREE.BoxGeometry(20, 16, 1),
+  new THREE.BoxGeometry(rows, cols, 0.1),
   new THREE.MeshPhongMaterial({
     color: "#003300",
     opacity: 0,
@@ -231,16 +248,16 @@ gltfLoader.load('/dice.glb', gltf => {
   gltf.scene.position.set(0, -2.4, 0);
   gltf.scene.rotation.x = Math.PI;
 
+  const curPos = positionMap[diceNum.value];
   for (let i = 0; i < diceNum.value; i++) {
     const dice = gltf.scene.clone();
-    dice.position.x = (i - 2) * 1.6
     scene.add(dice);
     // 世界里的骰子
     const diceShape = new CANNON.Box(new CANNON.Vec3(0.59, 0.59, 0.59));
     const diceBody = new CANNON.Body({
       shape: diceShape,
       material: diceMaterial,
-      position: new CANNON.Vec3((i - 2) * 1.6, -2.4, 0),
+      position: new CANNON.Vec3(curPos[i][0] * 1.6, -2.4, curPos[i][1] * 1.6),
       mass: 1
     });
     diceBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), Math.PI);
@@ -276,6 +293,12 @@ const defaultContactMaterial = new CANNON.ContactMaterial(diceMaterial, floorMat
 
 // 将材料的关联设置添加到物理世界
 world.addContactMaterial(defaultContactMaterial);
+
+const wallContactDiceMaterial = new CANNON.ContactMaterial(diceMaterial, wallMaterial, {
+  friction: 0
+});
+
+world.addContactMaterial(wallContactDiceMaterial);
 // 设置默认材质
 world.defaultContactMaterial = defaultContactMaterial;
 
