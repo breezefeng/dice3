@@ -246,7 +246,7 @@ gltfLoader.load('/dice.glb', gltf => {
     diceBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), Math.PI);
     world.addBody(diceBody);
     diceArr.push({ dice, body: diceBody });
-    //碰撞事件
+    // 碰撞事件
     diceBody.addEventListener('collide', (e) => {
       // 与地面碰撞时才有碰撞声音
       if (e.body?.material?.name === 'floor') {
