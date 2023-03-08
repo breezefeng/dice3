@@ -20,7 +20,7 @@ const audio = new Audio(audioFile);
 
 const ASPECT = window.innerWidth / window.innerHeight;
 // 骰子个数，默认5个
-const diceNum = ref(7);
+const diceNum = ref(5);
 // 初始化场景
 const scene = new THREE.Scene();
 // 初始化相机
@@ -93,13 +93,13 @@ const wallMaterial = new CANNON.Material('wall');
 let barrier = new CANNON.Body({
   mass: 0,
   material: wallMaterial,
-  shape: new CANNON.Box(new CANNON.Vec3(0.1, rows, cols))
+  shape: new CANNON.Box(new CANNON.Vec3(1, rows, cols))
 });
 barrier.position.set(-rows / 2, 0, 0);
 world.addBody(barrier);
 
 let wall = new THREE.Mesh(
-  new THREE.BoxGeometry(0.1, rows, cols),
+  new THREE.BoxGeometry(1, rows, cols),
   new THREE.MeshPhongMaterial({
     color: '#330033',
     opacity: 0,
@@ -123,13 +123,13 @@ scene.add(wall);
 barrier = new CANNON.Body({
   mass: 0,
   material: wallMaterial,
-  shape: new CANNON.Box(new CANNON.Vec3(0.1, rows, cols))
+  shape: new CANNON.Box(new CANNON.Vec3(1, rows, cols))
 });
 barrier.position.set(rows / 2, 0, 0);
 world.addBody(barrier);
 
 wall = new THREE.Mesh(
-  new THREE.BoxGeometry(0.1, rows, cols),
+  new THREE.BoxGeometry(1, rows, cols),
   new THREE.MeshPhongMaterial({
     color: "#000033",
     opacity: 0,
@@ -153,13 +153,13 @@ scene.add(wall);
 barrier = new CANNON.Body({
   mass: 0,
   material: wallMaterial,
-  shape: new CANNON.Box(new CANNON.Vec3(rows, cols, 0.1))
+  shape: new CANNON.Box(new CANNON.Vec3(rows, cols, 1))
 });
 barrier.position.set(0, 0, -cols / 2);
 world.addBody(barrier);
 
 wall = new THREE.Mesh(
-  new THREE.BoxGeometry(rows, cols, 0.1),
+  new THREE.BoxGeometry(rows, cols, 1),
   new THREE.MeshPhongMaterial({
     color: "#000033",
     opacity: 0,
@@ -183,13 +183,13 @@ scene.add(wall);
 barrier = new CANNON.Body({
   mass: 0,
   material: wallMaterial,
-  shape: new CANNON.Box(new CANNON.Vec3(rows, cols, 0.1))
+  shape: new CANNON.Box(new CANNON.Vec3(rows, cols, 1))
 });
 barrier.position.set(0, 0, cols / 2);
 world.addBody(barrier);
 
 wall = new THREE.Mesh(
-  new THREE.BoxGeometry(rows, cols, 0.1),
+  new THREE.BoxGeometry(rows, cols, 1),
   new THREE.MeshPhongMaterial({
     color: "#000033",
     opacity: 0,
@@ -212,15 +212,15 @@ scene.add(wall);
 
 barrier = new CANNON.Body({
   mass: 0,
+  material: wallMaterial,
   shape: new CANNON.Box(new CANNON.Vec3(rows, cols, 1)),
-
 });
 barrier.position.set(0, cols / 2, 0);
 barrier.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
 world.addBody(barrier);
 
 wall = new THREE.Mesh(
-  new THREE.BoxGeometry(rows, cols, 0.1),
+  new THREE.BoxGeometry(rows, cols, 1),
   new THREE.MeshPhongMaterial({
     color: "#003300",
     opacity: 0,
