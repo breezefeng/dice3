@@ -18,7 +18,6 @@ const positionMap = {
 
 const audio = new Audio(audioFile);
 
-const ASPECT = window.innerWidth / window.innerHeight;
 // 骰子个数，默认5个
 const diceNum = ref(5);
 // 初始化场景
@@ -48,8 +47,8 @@ controls.enabled = false;
 // scene.add(axesHelper);
 
 // 平面
-const rows = Math.floor(window.innerWidth / 60);
-const cols = Math.floor(window.innerHeight / 60);
+const rows = Math.floor(window.innerWidth / 50);
+const cols = Math.floor(window.innerHeight / 50);
 const planeGeometry = new THREE.PlaneGeometry(rows, cols, 1, 1);
 const plane = new THREE.Mesh(planeGeometry, new THREE.MeshStandardMaterial({ color: 0x000000 }));
 // 接收阴影
